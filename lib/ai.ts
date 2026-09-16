@@ -86,15 +86,18 @@ export async function processUserMessage(params: {
 }): Promise<AIAction> {
   const { message, emails, currentPage, currentEmailId } = params;
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey || apiKey.trim() === "" || apiKey === "your_openai_api_key_here") {
+  const apiKey = process.env.XAI_API_KEY;
+  if (!apiKey || apiKey.trim() === "" || apiKey === "your_xai_api_key_here") {
     return {
       action: "clarify",
-      question: "OpenAI API key is missing. Please add your OPENAI_API_KEY to .env.local to enable real-time AI mail actions."
+      question: "xAI API key is missing. Please add your XAI_API_KEY to .env.local to enable real-time Grok mail actions."
     };
   }
 
-  const openai = new OpenAI({ apiKey });
+  const xai = new OpenAI({
+    apiKey,
+    baseURL: "https://api.x.ai/v1",
+  });
 
   // Prepare a concise summary of the emails context for the model
   const emailContextList = emails.map(e => ({
@@ -118,8 +121,9 @@ ${JSON.stringify(emailContextList, null, 2)}
 Plan and return the exact structured action JSON.`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const model = process.env.XAI_MODEL || "grok-2-latest";
+    const response = await xai.chat.completions.create({
+      model,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: userPrompt }
@@ -135,17 +139,17 @@ Plan and return the exact structured action JSON.`;
     if (!content) {
       return {
         action: "clarify",
-        question: "Could not generate an action from the AI assistant. Please try again."
+        question: "Could not generate an action from the Grok assistant. Please try again."
       };
     }
 
     const raw = JSON.parse(content);
     return sanitizeAction(raw, emails);
   } catch (err: any) {
-    console.error("OpenAI API Error:", err);
+    console.error("xAI Grok API Error:", err);
     return {
       action: "clarify",
-      question: `AI request failed: ${err.message || "Unknown error"}. Please check your network or OpenAI API configuration.`
+      question: `xAI Grok request failed: ${err.message || "Unknown error"}. Please check your network or xAI API configuration.`
     };
   }
 }

@@ -104,6 +104,21 @@ assert.strictEqual(clarifyAction.action, "clarify");
 assert(clarifyAction.question.length > 0);
 console.log(`[PASS] Clarification action handled: "${clarifyAction.question}"`);
 
+// -------------------------------------------------------------
+// TEST 4: xAI Grok Provider Configuration
+// -------------------------------------------------------------
+console.log("\n>> Testing xAI Grok provider configuration in lib/ai.ts...");
+const { processUserMessage } = await import("../lib/ai.ts");
+const result = await processUserMessage({
+  message: "Show emails from last 7 days",
+  emails: initialEmails,
+  currentPage: "inbox",
+  currentEmailId: null
+});
+assert.strictEqual(result.action, "clarify");
+assert(result.question.includes("xAI API key is missing"), "Must prompt for xAI API key, not OpenAI");
+console.log(`[PASS] Verified xAI Grok provider prompt: "${result.question}"`);
+
 console.log("\n==================================================");
 console.log("ALL LOCAL MODEL, ACTION & SCHEMA TESTS PASSED!");
 console.log("==================================================\n");

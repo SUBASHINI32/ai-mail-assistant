@@ -1,7 +1,7 @@
 # AI Mail - Autonomous AI-Controlled Mail Web Application
 
 AI Mail is a Next.js App Router email web application where the AI assistant directly **controls the Mail UI**. 
-Unlike conversational chatbots that merely answer questions in a chat window, AI Mail's assistant interprets natural language instructions into strongly-typed structured actions via the official OpenAI SDK (JSON Schema structured output) and deterministically executes them on the frontend—navigating pages, populating forms, applying filters, and opening messages.
+Unlike conversational chatbots that merely answer questions in a chat window, AI Mail's assistant interprets natural language instructions into strongly-typed structured actions via the xAI Grok API (JSON Schema structured output) and deterministically executes them on the frontend—navigating pages, populating forms, applying filters, and opening messages.
 
 ---
 
@@ -16,7 +16,7 @@ Unlike conversational chatbots that merely answer questions in a chat window, AI
    - Navigates between Inbox, Sent, and Compose views.
 2. **Zero Regex Intent Detection**:
    - No brittle substring matching or regex parsing.
-   - Full semantic understanding powered by OpenAI `gpt-4o-mini` with strict structured output.
+   - Full semantic understanding powered by xAI Grok (`grok-2-latest`) with strict structured output.
 3. **Robust Clarification & Ambiguity Handling**:
    - If a command lacks critical information (e.g., "Send an email" without recipient or body), the AI returns a `clarify` action prompting the user for details without mutating the UI or guessing parameters.
 4. **Shared In-Memory State Architecture**:
@@ -35,7 +35,7 @@ Unlike conversational chatbots that merely answer questions in a chat window, AI
 - **Language**: TypeScript
 - **UI & Styling**: React 18, Tailwind CSS, Lucide React icons
 - **Backend / APIs**: Next.js Route Handlers (`/api/ai`, `/api/send`)
-- **AI / LLM**: Official OpenAI SDK (`openai`), structured JSON schema outputs
+- **AI / LLM**: xAI Grok API (`https://api.x.ai/v1`, model: `grok-2-latest`), structured JSON schema outputs
 - **State Management**: React `createContext`, `useContext`, `useState`, `useMemo`
 
 ---
@@ -78,11 +78,11 @@ ai-mail-assistant/
 │
 ├── lib/
 │   ├── actions.ts               # Action descriptor and reply draft utilities
-│   ├── ai.ts                    # OpenAI client, system prompt, and JSON Schema
+│   ├── ai.ts                    # xAI Grok client, system prompt, and JSON Schema
 │   ├── context.tsx              # Central MailContext and executeAIAction dispatcher
 │   └── types.ts                 # Strongly-typed definitions (Email, AIAction, Draft)
 │
-├── .env.local.example           # Example environment file for OPENAI_API_KEY
+├── .env.local.example           # Example environment file for XAI_API_KEY
 ├── .gitignore                   # Git ignore rules
 ├── next.config.mjs              # Next.js configuration
 ├── package.json                 # Project dependencies and npm scripts
@@ -103,7 +103,7 @@ User Command (Natural Language)
    POST /api/ai (Next.js Route Handler)
                │
                ▼
-   OpenAI gpt-4o-mini (System Prompt + Strict JSON Schema)
+   xAI Grok-2 (System Prompt + Strict JSON Schema via https://api.x.ai/v1)
                │
                ▼
    Structured AIAction JSON
@@ -172,12 +172,12 @@ Copy `.env.local.example` to `.env.local`:
 ```bash
 cp .env.local.example .env.local
 ```
-Edit `.env.local` and insert your OpenAI API key:
+Edit `.env.local` and insert your xAI API key:
 ```env
-OPENAI_API_KEY=sk-...
+XAI_API_KEY=xai-...
 ```
 
-> **Note**: If `OPENAI_API_KEY` is not set or is invalid, the backend gracefully catches the error and returns a helpful clarification message in the assistant panel without crashing the application.
+> **Note**: If `XAI_API_KEY` is not set or is invalid, the backend gracefully catches the error and returns a helpful clarification message in the assistant panel without crashing the application.
 
 ### 3. Install Dependencies
 ```bash
