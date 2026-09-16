@@ -121,7 +121,7 @@ ${JSON.stringify(emailContextList, null, 2)}
 Plan and return the exact structured action JSON.`;
 
   try {
-    const model = process.env.XAI_MODEL || "grok-2-latest";
+    const model = process.env.XAI_MODEL || "grok-4.3";
     const response = await xai.chat.completions.create({
       model,
       messages: [

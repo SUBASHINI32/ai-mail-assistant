@@ -16,7 +16,7 @@ Unlike conversational chatbots that merely answer questions in a chat window, AI
    - Navigates between Inbox, Sent, and Compose views.
 2. **Zero Regex Intent Detection**:
    - No brittle substring matching or regex parsing.
-   - Full semantic understanding powered by xAI Grok (`grok-2-latest`) with strict structured output.
+   - Full semantic understanding powered by xAI Grok (`grok-4.3`) with strict structured output.
 3. **Robust Clarification & Ambiguity Handling**:
    - If a command lacks critical information (e.g., "Send an email" without recipient or body), the AI returns a `clarify` action prompting the user for details without mutating the UI or guessing parameters.
 4. **Shared In-Memory State Architecture**:
@@ -35,7 +35,7 @@ Unlike conversational chatbots that merely answer questions in a chat window, AI
 - **Language**: TypeScript
 - **UI & Styling**: React 18, Tailwind CSS, Lucide React icons
 - **Backend / APIs**: Next.js Route Handlers (`/api/ai`, `/api/send`)
-- **AI / LLM**: xAI Grok API (`https://api.x.ai/v1`, model: `grok-2-latest`), structured JSON schema outputs
+- **AI / LLM**: xAI Grok API (`https://api.x.ai/v1`, model: `grok-4.3`), structured JSON schema outputs
 - **State Management**: React `createContext`, `useContext`, `useState`, `useMemo`
 
 ---
