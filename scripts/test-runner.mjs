@@ -105,19 +105,20 @@ assert(clarifyAction.question.length > 0);
 console.log(`[PASS] Clarification action handled: "${clarifyAction.question}"`);
 
 // -------------------------------------------------------------
-// TEST 4: xAI Grok Provider Configuration
+// TEST 4: Local Ollama Provider (qwen3:4b)
 // -------------------------------------------------------------
-console.log("\n>> Testing xAI Grok provider configuration in lib/ai.ts...");
+console.log("\n>> Testing local Ollama provider with qwen3:4b on 'Open latest email'...");
 const { processUserMessage } = await import("../lib/ai.ts");
 const result = await processUserMessage({
-  message: "Show emails from last 7 days",
+  message: "Open latest email",
   emails: initialEmails,
   currentPage: "inbox",
   currentEmailId: null
 });
-assert.strictEqual(result.action, "clarify");
-assert(result.question.includes("xAI API key is missing"), "Must prompt for xAI API key, not OpenAI");
-console.log(`[PASS] Verified xAI Grok provider prompt: "${result.question}"`);
+console.log("Ollama returned action:", result);
+assert.strictEqual(result.action, "open_email", "Expected open_email action");
+assert.strictEqual(result.email_id, "email-1", "Expected latest email ID email-1");
+console.log(`[PASS] Verified Ollama qwen3:4b correctly returned open_email for latest email: ${result.email_id}`);
 
 console.log("\n==================================================");
 console.log("ALL LOCAL MODEL, ACTION & SCHEMA TESTS PASSED!");

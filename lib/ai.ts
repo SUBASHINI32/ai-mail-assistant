@@ -1,4 +1,3 @@
-import OpenAI from "openai";
 import { AIAction, Email } from "./types";
 
 const SYSTEM_PROMPT = `You are an AI action planner that controls the user interface of a web-based email client called AI Mail.
@@ -86,18 +85,8 @@ export async function processUserMessage(params: {
 }): Promise<AIAction> {
   const { message, emails, currentPage, currentEmailId } = params;
 
-  const apiKey = process.env.XAI_API_KEY;
-  if (!apiKey || apiKey.trim() === "" || apiKey === "your_xai_api_key_here") {
-    return {
-      action: "clarify",
-      question: "xAI API key is missing. Please add your XAI_API_KEY to .env.local to enable real-time Grok mail actions."
-    };
-  }
-
-  const xai = new OpenAI({
-    apiKey,
-    baseURL: "https://api.x.ai/v1",
-  });
+  const baseUrl = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+  const model = process.env.OLLAMA_MODEL || "qwen3:4b";
 
   // Prepare a concise summary of the emails context for the model
   const emailContextList = emails.map(e => ({
@@ -121,35 +110,52 @@ ${JSON.stringify(emailContextList, null, 2)}
 Plan and return the exact structured action JSON.`;
 
   try {
-    const model = process.env.XAI_MODEL || "grok-4.3";
-    const response = await xai.chat.completions.create({
-      model,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: userPrompt }
-      ],
-      response_format: {
-        type: "json_schema",
-        json_schema: actionJsonSchema
+    const res = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-      temperature: 0.1
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: userPrompt }
+        ],
+        format: "json",
+        stream: false,
+        think: false,
+        options: {
+          temperature: 0.1,
+        }
+      }),
     });
 
-    const content = response.choices[0]?.message?.content;
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(`Ollama returned status ${res.status}: ${errText || res.statusText}`);
+    }
+
+    const data = await res.json();
+    const content = data?.message?.content;
     if (!content) {
       return {
         action: "clarify",
-        question: "Could not generate an action from the Grok assistant. Please try again."
+        question: "Could not generate an action from Ollama. Please try again."
       };
     }
 
-    const raw = JSON.parse(content);
+    let cleanContent = content.trim();
+    if (cleanContent.startsWith("```")) {
+      cleanContent = cleanContent.replace(/^```(?:json)?\s*/, "").replace(/\s*```$/, "").trim();
+    }
+
+    const raw = JSON.parse(cleanContent);
     return sanitizeAction(raw, emails);
   } catch (err: any) {
-    console.error("xAI Grok API Error:", err);
+    console.error("Ollama API Error:", err);
     return {
       action: "clarify",
-      question: `xAI Grok request failed: ${err.message || "Unknown error"}. Please check your network or xAI API configuration.`
+      question: `Ollama request failed: ${err.message || "Unknown error"}. Please check that Ollama is running at ${baseUrl} with model ${model}.`
     };
   }
 }

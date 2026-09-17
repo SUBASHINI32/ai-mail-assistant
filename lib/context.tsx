@@ -52,7 +52,11 @@ export function MailProvider({ children }: { children: React.ReactNode }) {
       id: "welcome-msg",
       role: "assistant",
       content: "Hello! I am your AI Mail Assistant. You can give me natural language commands to control the Mail UI — such as composing drafts, filtering emails by date or sender, opening emails, or navigating.",
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp: new Date().toLocaleTimeString("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+}),
     },
   ]);
   const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
@@ -224,7 +228,11 @@ export function MailProvider({ children }: { children: React.ReactNode }) {
               id: `clarify-${Date.now()}`,
               role: "assistant",
               content: "Which email would you like to reply to? Please open an email first or specify the sender.",
-              timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              timestamp: new Date().toLocaleTimeString("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+}),
             },
           ]);
         }
@@ -257,7 +265,11 @@ export function MailProvider({ children }: { children: React.ReactNode }) {
       id: `user-${Date.now()}`,
       role: "user",
       content: command,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp: new Date().toLocaleTimeString("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+}),
     };
 
     setAiMessages((prev) => [...prev, userMsg]);
@@ -299,7 +311,11 @@ export function MailProvider({ children }: { children: React.ReactNode }) {
         role: "assistant",
         content: assistantContent,
         action,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        timestamp: new Date().toLocaleTimeString("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+}),
       };
 
       setAiMessages((prev) => [...prev, aiMsg]);
@@ -315,7 +331,11 @@ export function MailProvider({ children }: { children: React.ReactNode }) {
           id: `err-${Date.now()}`,
           role: "assistant",
           content: `Error: ${err.message || "Unable to reach AI service."}`,
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          timestamp: new Date().toLocaleTimeString("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+}),
         },
       ]);
     } finally {

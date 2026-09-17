@@ -19,14 +19,21 @@ export function EmailList({ emails, emptyMessage = "No emails found" }: EmailLis
       const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
       if (diffDays === 0) {
-        return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-      } else if (diffDays === 1) {
-        return "Yesterday";
-      } else if (diffDays < 7) {
-        return `${diffDays}d ago`;
-      } else {
-        return d.toLocaleDateString([], { month: "short", day: "numeric" });
-      }
+  return d.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+} else if (diffDays === 1) {
+  return "Yesterday";
+} else if (diffDays < 7) {
+  return `${diffDays}d ago`;
+} else {
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
     } catch {
       return dateStr;
     }
